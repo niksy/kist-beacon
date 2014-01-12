@@ -1,4 +1,4 @@
-/* kist-beacon 0.0.0 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
+/* kist-beacon 0.1.0 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
 var Kist = Kist || {};
 
 Kist.Beacon = (function () {
