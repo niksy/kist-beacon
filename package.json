@@ -1,0 +1,26 @@
+{
+  "name": "kist-beacon",
+  "version": "0.0.0",
+  "description": "Front-end logging interface.",
+  "main": "src/kist-beacon.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/niksy/kist-beacon.git"
+  },
+  "keywords": [
+    "logger",
+    "frontend"
+  ],
+  "author": "Ivan Nikolić",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/niksy/kist-beacon/issues"
+  },
+  "homepage": "https://github.com/niksy/kist-beacon",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-bump": "0.0.13"
+  }
+}
