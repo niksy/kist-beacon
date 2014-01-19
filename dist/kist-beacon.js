@@ -1,4 +1,4 @@
-/* kist-beacon 0.1.0 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
+/* kist-beacon 0.1.1 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
 var Kist = Kist || {};
 
 Kist.Beacon = (function () {
@@ -41,12 +41,12 @@ Kist.Beacon = (function () {
 	o.serializeParams = function ( pObject ) {
 
 		var arrString = [];
-		for(var objectProperty in pObject) {
+		for (var objectProperty in pObject) {
 			if (pObject.hasOwnProperty(objectProperty)) {
-				arrString.push(encodeURIComponent(objectProperty) + "=" + encodeURIComponent(pObject[objectProperty]));
+				arrString.push(encodeURIComponent(objectProperty) + '=' + encodeURIComponent(pObject[objectProperty]));
 			}
 		}
-		return arrString.join("&");
+		return arrString.join('&');
 
 	};
 
@@ -89,30 +89,11 @@ Kist.Beacon = (function () {
 
 		};
 
-		var methods = ['log', 'warn', 'error'];
+		var methods = [ 'log', 'warn', 'error' ];
 
-		for (var i = 0; i < methods.length; i++) {
+		for ( var i = 0; i < methods.length; i++ ) {
 			intercept(methods[i]);
 		}
-
-	};
-
-	/**
-	 * Send call via image source
-	 *
-	 * @param  {Object} pParams
-	 *
-	 * @return {Ui}
-	 */
-	o.imageCall = function ( pParams ) {
-
-		var imageEl = new Image();
-
-		var paramsObject = pParams;
-		paramsObject.userAgent = navigator.userAgent;
-		paramsObject.time = this.getTimestamp();
-
-		imageEl.src = this.settings.loggerUrl + '?' + this.serializeParams( pParams );
 
 	};
 
