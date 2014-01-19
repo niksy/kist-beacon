@@ -40,12 +40,12 @@ Kist.Beacon = (function () {
 	o.serializeParams = function ( pObject ) {
 
 		var arrString = [];
-		for(var objectProperty in pObject) {
+		for (var objectProperty in pObject) {
 			if (pObject.hasOwnProperty(objectProperty)) {
-				arrString.push(encodeURIComponent(objectProperty) + "=" + encodeURIComponent(pObject[objectProperty]));
+				arrString.push(encodeURIComponent(objectProperty) + '=' + encodeURIComponent(pObject[objectProperty]));
 			}
 		}
-		return arrString.join("&");
+		return arrString.join('&');
 
 	};
 
@@ -88,9 +88,9 @@ Kist.Beacon = (function () {
 
 		};
 
-		var methods = ['log', 'warn', 'error'];
+		var methods = [ 'log', 'warn', 'error' ];
 
-		for (var i = 0; i < methods.length; i++) {
+		for ( var i = 0; i < methods.length; i++ ) {
 			intercept(methods[i]);
 		}
 
