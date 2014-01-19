@@ -44,14 +44,41 @@ module.exports = function (grunt) {
 				tagMessage: 'Version %VERSION%',
 				push: false
 			}
+		},
+
+		jscs: {
+			main: {
+				options: {
+					config: '.jscs'
+				},
+				files: {
+					src: [
+						'src/kist-beacon.js'
+					]
+				}
+			}
+		},
+
+		jshint: {
+			main: {
+				options: {
+					jshintrc: '.jshintrc'
+				},
+				src: [
+					'src/kist-beacon.js'
+				]
+			}
 		}
 
 	});
 
+	grunt.loadNpmTasks( 'grunt-contrib-jshint' );
+	grunt.loadNpmTasks( 'grunt-jscs-checker' );
 	grunt.loadNpmTasks( 'grunt-contrib-concat' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-bump' );
 
+	grunt.registerTask( 'stylecheck', ['jshint:main', 'jscs:main'] );
 	grunt.registerTask( 'default', ['concat:dist', 'uglify:dist'] );
 	grunt.registerTask( 'releasePatch', ['bump-only:patch', 'default', 'bump-commit'] );
 	grunt.registerTask( 'releaseMinor', ['bump-only:minor', 'default', 'bump-commit'] );
