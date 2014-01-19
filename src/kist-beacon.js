@@ -97,25 +97,6 @@ Kist.Beacon = (function () {
 	};
 
 	/**
-	 * Send call via image source
-	 *
-	 * @param  {Object} pParams
-	 *
-	 * @return {Ui}
-	 */
-	o.imageCall = function ( pParams ) {
-
-		var imageEl = new Image();
-
-		var paramsObject = pParams;
-		paramsObject.userAgent = navigator.userAgent;
-		paramsObject.time = this.getTimestamp();
-
-		imageEl.src = this.settings.loggerUrl + '?' + this.serializeParams( pParams );
-
-	};
-
-	/**
 	 * Send call via AJAX method
 	 *
 	 * @param  {Object} pParams
