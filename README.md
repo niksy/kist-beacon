@@ -13,8 +13,14 @@ Kist.Beacon.init({
 });
 ```
 
-One object parameter is availbable—`loggerUrl`. This is the endpoint where your
-application will pass query parameters from AJAX call and do with them what
+### Config
+
+#### `loggerUrl`
+
+**Required**  
+Type: `String`
+
+Endpoint where your application will pass query parameters from AJAX call and do with them what
 you desire: save them to database, logfile on server, etc.
 
 ## Installation
@@ -26,3 +32,8 @@ Distribution files are in `dist` folder.
 ```bash
 bower install niksy/kist-beacon
 ```
+
+## Acknowledgments
+
+* https://github.com/Lapple/ErrorBoard
+* http://tobyho.com/2012/07/27/taking-over-console-log/
