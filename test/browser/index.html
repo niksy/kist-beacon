@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Beacon test</title>
+	<script src="../../src/kist-beacon.js"></script>
+	<script>
+		var beacon1 = new kist.Beacon({ url: 'http://root.loc:3000/log', console: true });
+		var beacon2 = new kist.Beacon({ url: 'http://root.loc:3000/log' });
+	</script>
+	<script>console.log('console call');</script>
+	<script>barfoo</script>
+</head>
+<body>
+
+	<div class="controls">
+		<button type="button" class="error">Generate error</button>
+		<button type="button" class="console">Generate console call</button>
+		<button type="button" class="destroy1">Destroy "beacon1"</button>
+		<button type="button" class="destroy2">Destroy "beacon2"</button>
+	</div>
+
+	<script>
+
+		if ( !+'\v1' ) {
+			method = {
+				name: 'attachEvent',
+				handler: 'on'
+			};
+		} else {
+			method = {
+				name: 'addEventListener',
+				handler: ''
+			};
+		}
+
+		document.querySelector('.error')[method.name](method.handler + 'click', function () {
+			foobar;
+		});
+
+		document.querySelector('.console')[method.name](method.handler + 'click', function () {
+			console.log('console call from button');
+		});
+
+		document.querySelector('.destroy1')[method.name](method.handler + 'click', function () {
+			beacon1.destroy();
+		});
+
+		document.querySelector('.destroy2')[method.name](method.handler + 'click', function () {
+			beacon2.destroy();
+		});
+
+	</script>
+
+</body>
+</html>

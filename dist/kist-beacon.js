@@ -1,164 +1,284 @@
-/* kist-beacon 0.1.1 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
-var Kist = Kist || {};
+/*! kist-beacon 0.1.1 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
+;(function ( window, document, undefined ) {
 
-Kist.Beacon = (function () {
+	var consoleIntercepted = false;
+	var queue = {
+		js: [],
+		'console': [],
+	};
 
-	var o = {};
-	o.settings = {};
+	var events = {
 
-	o.init = function ( pParams ) {
+		/**
+		 * @this {Beacon}
+		 *
+		 * @param  {Array} type
+		 *
+		 * @return {}
+		 */
+		setup: function ( type ) {
+			for ( var i = 0, typeLength = type.length; i < typeLength; i++ ) {
+				queue[type[i]].push(this);
+			}
+		},
+		/**
+		 * @this {Beacon}
+		 *
+		 * @param  {Array} type
+		 *
+		 * @return {}
+		 */
+		destroy: function () {
 
-		this.settings.loggerUrl = pParams.loggerUrl;
+			var index;
+			var queueItem;
 
-		this.bindActions();
+			for ( var prop in queue ) {
+				if ( queue.hasOwnProperty(prop) ) {
+					queueItem = queue[prop];
+					index = indexOf(queueItem, this);
+					if ( index !== -1 ) {
+						queueItem.splice(index, 1);
+					}
+				}
+			}
 
+		}
 	};
 
 	/**
-	 * Bind action
+	 * @param  {Array} arr
+	 * @param  {Object} obj
 	 *
-	 * @return {Ui}
+	 * @return {Integer}
 	 */
-	o.bindActions = function () {
+	function indexOf ( arr, obj ) {
+		if ( arr.indexOf ) {
+			return arr.indexOf(obj);
+		}
+		for ( var i = 0; i < arr.length; ++i ) {
+			if ( arr[i] === obj ) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
-		var self = this;
+	/**
+	 * @param  {Object} obj
+	 *
+	 * @return {Object}
+	 */
+	function extend ( obj ) {
+		var source;
+		var prop;
+		for ( var i = 1, length = arguments.length; i < length; i++ ) {
+			source = arguments[i];
+			for ( prop in source ) {
+				obj[prop] = source[prop];
+			}
+		}
+		return obj;
+	}
 
-		window.onerror = function ( pErrorMessage, pUrl, pLineNumber ) {
-			self.catchJsError( pErrorMessage, pUrl, pLineNumber );
-		};
-
-		o.interceptConsole();
-
-	};
+	/**
+	 * Generate data for sending via AJAX call
+	 *
+	 * @param  {Object} data
+	 *
+	 * @return {Object}
+	 */
+	function generate ( data ) {
+		var obj;
+		obj = extend({},{
+			logType: 'Generic',
+			userAgent: navigator.userAgent,
+			time: (!Date.now ? new Date().getTime() : Date.now())
+		}, data);
+		return obj;
+	}
 
 	/**
 	 * Serialize params for sending via AJAX call
 	 *
-	 * @param  {Object} pObject
+	 * @param  {Object} data
 	 *
 	 * @return {String}
 	 */
-	o.serializeParams = function ( pObject ) {
-
-		var arrString = [];
-		for (var objectProperty in pObject) {
-			if (pObject.hasOwnProperty(objectProperty)) {
-				arrString.push(encodeURIComponent(objectProperty) + '=' + encodeURIComponent(pObject[objectProperty]));
+	function qs ( data ) {
+		var arr = [];
+		var encode = encodeURIComponent;
+		for (var prop in data) {
+			if (data.hasOwnProperty(prop)) {
+				arr.push(encode(prop) + '=' + encode(data[prop]));
 			}
 		}
-		return arrString.join('&');
+		return arr.join('&');
+	}
 
-	};
+	function interceptConsole () {
 
-	/**
-	 * Intercept `console` calls
-	 *
-	 * @return {Ui}
-	 */
-	o.interceptConsole = function () {
-
-		var self = this;
-
-		if ( !window.console ) {
+		if ( !window.console || consoleIntercepted ) {
 			return;
 		}
+		consoleIntercepted = true;
 
-		var intercept = function ( pMethod ) {
+		var methods = ['log', 'warn', 'error'];
 
-			var original = window.console[pMethod];
+		function intercept ( method ) {
 
-			window.console[pMethod] = function () {
+			var original = window.console[method];
+
+			window.console[method] = function BeaconConsoleCall ( content ) {
 
 				// Do sneaky stuff
-				self.catchConsoleCall( pMethod, arguments[0] );
+				for ( var i = 0, queueLength = queue['console'].length; i < queueLength; i++ ) {
+					sendConsole.call(queue['console'][i], method, content);
+				}
 
-				if (original.apply) {
-
+				if ( original.apply ) {
 					// Do this for normal browsers
 					original.apply(window.console, arguments);
-
 				} else {
-
 					// Do this for IE
-					var message = Array.prototype.slice.apply(arguments).join(' ');
-					original(message);
-
+					original(Array.prototype.slice.apply(arguments).join(' '));
 				}
 
 			};
 
-		};
-
-		var methods = [ 'log', 'warn', 'error' ];
+		}
 
 		for ( var i = 0; i < methods.length; i++ ) {
 			intercept(methods[i]);
 		}
 
-	};
+	}
 
 	/**
-	 * Send call via AJAX method
+	 * Catch JS errors
 	 *
-	 * @param  {Object} pParams
+	 * @param  {String} errorMessage
+	 * @param  {String} url
+	 * @param  {Integer} lineNumber
 	 *
-	 * @return {Ui}
+	 * @return {}
 	 */
-	o.ajaxCall = function ( pParams ) {
-
-		var xmlHttp = new XMLHttpRequest();
-
-		var paramsObject = pParams;
-		paramsObject.userAgent = navigator.userAgent;
-		paramsObject.time = (!Date.now ? new Date().getTime() : Date.now());
-
-		xmlHttp.open('GET', this.settings.loggerUrl + '?' + this.serializeParams( pParams ),true);
-		xmlHttp.send();
-
-	};
+	function BeaconErrorJS ( errorMessage, url, lineNumber ) {
+		if ( originalErrorJS ) {
+			originalErrorJS.apply(window, arguments);
+		}
+		for ( var i = 0, queueLength = queue.js.length; i < queueLength; i++ ) {
+			sendJS.apply(queue.js[i], arguments);
+		}
+		return false;
+	}
+	var originalErrorJS = window.onerror;
+	window.onerror = BeaconErrorJS;
 
 	/**
 	 * Catch JS error
 	 *
-	 * @param  {String} pErrorMessage
-	 * @param  {String} pUrl
-	 * @param  {String} pLineNumber
+	 * @param  {String} errorMessage
+	 * @param  {String} url
+	 * @param  {String} lineNumber
 	 *
-	 * @return {Ui}
+	 * @return {Object}
 	 */
-	o.catchJsError = function ( pErrorMessage, pUrl, pLineNumber ) {
+	function sendJS ( errorMessage, url, lineNumber ) {
 
-		var paramsObject = {
+		return this.send(generate({
 			logType: 'JS Error',
-			errorMessage: pErrorMessage,
-			url: pUrl,
-			lineNumber: pLineNumber
-		};
+			errorMessage: errorMessage,
+			url: url,
+			lineNumber: lineNumber
+		}));
 
-		this.ajaxCall( paramsObject );
+	}
 
+	/**
+	 * Catch console call
+	 *
+	 * @param  {String} method
+	 * @param  {String} message
+	 *
+	 * @return {Object}
+	 */
+	function sendConsole ( method, message ) {
+
+		return this.send(generate({
+			logType: 'Console call',
+			methodType: method,
+			url: window.location.href,
+			message: message
+		}));
+
+	}
+
+	/**
+	 * @class
+	 *
+	 * @param {Object} options
+	 */
+	function Beacon ( options ) {
+
+		var type = [];
+
+		this.options = extend({}, this.defaults, options);
+
+		for ( var prop in this.options ) {
+			if (
+				this.options.hasOwnProperty(prop) &&
+				(prop === 'console' || prop === 'js')
+			) {
+				if ( this.options[prop] ) {
+					type.push(prop);
+				}
+			}
+		}
+
+		events.setup.call(this, type);
+
+		if ( this.options['console'] ) {
+			interceptConsole();
+		}
+
+	}
+
+	/**
+	 * Send call via AJAX method
+	 *
+	 * @param  {Object} data
+	 *
+	 * @return {Object}
+	 */
+	Beacon.prototype.send = function ( data ) {
+
+		data = generate(data);
+
+		// var xhr = new XMLHttpRequest();
+		// xhr.open('GET', this.options.url + '?' + qs(data), true);
+		// xhr.send();
+
+		(new Image()).src = this.options.url + '?' + qs(data);
+
+		return data;
+
+	};
+
+	Beacon.prototype.destroy = function () {
+		events.destroy.call(this);
 	};
 
 	/**
-	 * Catch `console` call
-	 *
-	 * @param  {String} pMethod
-	 * @param  {String} pMessage
-	 *
-	 * @return {Ui}
+	 * @type {Object}
 	 */
-	o.catchConsoleCall = function ( pMethod, pMessage ) {
-
-		var paramsObject = {
-			logType: 'Console call',
-			methodType: pMethod,
-			message: pMessage
-		};
-
-		this.ajaxCall( paramsObject );
-
+	Beacon.prototype.defaults = {
+		url: '',
+		js: true,
+		'console': false
 	};
 
-	return o;
+	window.kist = window.kist || {};
+	window.kist.Beacon = Beacon;
 
-})();
+})( window, document );

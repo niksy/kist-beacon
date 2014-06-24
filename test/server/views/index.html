@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Beacon test</title>
+</head>
+<body>
+
+	<table cellpadding="10" cellspacing="0" border="1">
+		<thead>
+			<tr>
+				<th>Log type</th>
+				<th>UA</th>
+				<th>Time</th>
+				<th>Method type</th>
+				<th>URL</th>
+				<th>Message</th>
+				<th>Error message</th>
+				<th>Line number</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% if (data) { %>
+			<% for ( var i = 0, dataLength = data.length; i < dataLength; i++ ) { %>
+			<tr>
+				<td><%= data[i].logType %></td>
+				<td><%= data[i].userAgent %></td>
+				<td><%= data[i].time %></td>
+				<td><%= data[i].methodType ? data[i].methodType : '-' %></td>
+				<td><%= data[i].url %></td>
+				<td><%= data[i].message ? data[i].message : '-' %></td>
+				<td><%= data[i].errorMessage ? data[i].errorMessage : '-' %></td>
+				<td><%= data[i].lineNumber ? data[i].lineNumber : '-' %></td>
+			</tr>
+			<% } %>
+			<% } %>
+		</tbody>
+	</table>
+
+</body>
+</html>

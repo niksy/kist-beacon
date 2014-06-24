@@ -1,31 +1,30 @@
-module.exports = function (grunt) {
+module.exports = function ( grunt ) {
 
 	grunt.initConfig({
 
 		pkg: grunt.file.readJSON('package.json'),
 
 		meta: {
-			banner: '<%= pkg.name %> <%= pkg.version %> - <%= pkg.description %> | Author: <%= pkg.author %>, <%= grunt.template.today("yyyy") %> | License: <%= pkg.license %>',
-			defaultBanner: '/* <%= meta.banner %> */\n',
-			unstrippedBanner: '/*! <%= meta.banner %> */\n'
+			banner: '/*! <%= pkg.name %> <%= pkg.version %> - <%= pkg.description %> | Author: <%= pkg.author %>, <%= grunt.template.today("yyyy") %> | License: <%= pkg.license %> */\n'
 		},
 
 		concat: {
-			options: {
-				stripBanners: true,
-				banner: '<%= meta.defaultBanner %>'
-			},
 			dist: {
-				src: ['src/kist-beacon.js'],
-				dest: 'dist/kist-beacon.js'
+				options: {
+					stripBanners: true,
+					banner: '<%= meta.banner %>'
+				},
+				files: {
+					'dist/kist-beacon.js': ['src/kist-beacon.js']
+				}
 			}
 		},
 
 		uglify: {
-			options: {
-			banner: '<%= meta.unstrippedBanner %>'
-			},
 			dist: {
+				options: {
+					banner: '<%= meta.banner %>'
+				},
 				files: {
 					'dist/kist-beacon.min.js': ['src/kist-beacon.js']
 				}
@@ -41,7 +40,7 @@ module.exports = function (grunt) {
 				commitFiles: ['-a'],
 				createTag: true,
 				tagName: '%VERSION%',
-				tagMessage: 'Version %VERSION%',
+				tagMessage: '',
 				push: false
 			}
 		},
@@ -49,11 +48,11 @@ module.exports = function (grunt) {
 		jscs: {
 			main: {
 				options: {
-					config: '.jscs'
+					config: '.jscsrc'
 				},
 				files: {
 					src: [
-						'src/kist-beacon.js'
+						'src/**/*.js'
 					]
 				}
 			}
@@ -65,7 +64,7 @@ module.exports = function (grunt) {
 					jshintrc: '.jshintrc'
 				},
 				src: [
-					'src/kist-beacon.js'
+					'src/**/*.js'
 				]
 			}
 		}
@@ -79,11 +78,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks( 'grunt-bump' );
 
 	grunt.registerTask( 'stylecheck', ['jshint:main', 'jscs:main'] );
-	grunt.registerTask( 'default', ['concat:dist', 'uglify:dist'] );
+	grunt.registerTask( 'default', ['stylecheck', 'concat', 'uglify'] );
 	grunt.registerTask( 'releasePatch', ['bump-only:patch', 'default', 'bump-commit'] );
 	grunt.registerTask( 'releaseMinor', ['bump-only:minor', 'default', 'bump-commit'] );
 	grunt.registerTask( 'releaseMajor', ['bump-only:major', 'default', 'bump-commit'] );
 
-
 };
-

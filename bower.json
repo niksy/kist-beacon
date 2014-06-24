@@ -1,22 +1,25 @@
 {
   "name": "kist-beacon",
   "version": "0.1.1",
-  "homepage": "https://github.com/niksy/kist-beacon",
   "description": "Front-end logging interface.",
-  "main": "dist/kist-beacon.js",
-  "keywords": [
-    "logger",
-    "frontend"
-  ],
   "authors": [
     "Ivan Nikolić"
   ],
   "license": "MIT",
+  "main": "dist/kist-beacon.min.js",
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "src",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "homepage": "https://github.com/niksy/kist-beacon",
+  "keywords": [
+    "logger",
+    "frontend"
   ]
 }
