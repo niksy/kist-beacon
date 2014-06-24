@@ -1,4 +1,4 @@
-/*! kist-beacon 0.1.1 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
+/*! kist-beacon 0.2.0 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( window, document, undefined ) {
 
 	var consoleIntercepted = false;
