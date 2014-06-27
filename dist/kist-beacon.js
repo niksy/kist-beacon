@@ -1,4 +1,4 @@
-/*! kist-beacon 0.2.0 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
+/*! kist-beacon 0.2.1 - Front-end logging interface. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( window, document, undefined ) {
 
 	var consoleIntercepted = false;
@@ -224,6 +224,7 @@
 		var type = [];
 
 		this.options = extend({}, this.defaults, options);
+		this.mediator = new Image();
 
 		for ( var prop in this.options ) {
 			if (
@@ -259,7 +260,7 @@
 		// xhr.open('GET', this.options.url + '?' + qs(data), true);
 		// xhr.send();
 
-		(new Image()).src = this.options.url + '?' + qs(data);
+		this.mediator.src = this.options.url + '?' + qs(data);
 
 		return data;
 
