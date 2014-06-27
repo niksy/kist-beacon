@@ -223,6 +223,7 @@
 		var type = [];
 
 		this.options = extend({}, this.defaults, options);
+		this.mediator = new Image();
 
 		for ( var prop in this.options ) {
 			if (
@@ -258,7 +259,7 @@
 		// xhr.open('GET', this.options.url + '?' + qs(data), true);
 		// xhr.send();
 
-		(new Image()).src = this.options.url + '?' + qs(data);
+		this.mediator.src = this.options.url + '?' + qs(data);
 
 		return data;
 
