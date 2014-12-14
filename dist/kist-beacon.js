@@ -1,14 +1,13 @@
-/*! kist-beacon 0.2.1 - Front-end logging interface. | Author: Ivan Nikolić <niksy5@gmail.com> (http://ivannikolic.com/), 2014 | License: MIT */
+/*! kist-beacon 0.2.2 - Front-end logging interface. | Author: Ivan Nikolić <niksy5@gmail.com> (http://ivannikolic.com/), 2014 | License: MIT */
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),(f.kist||(f.kist={})).Beacon=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 /* jshint latedef:false */
 
-var indexof = require(4);
-var qs = require(5).stringify;
+var indexof = require(5);
+var qs = require(6).stringify;
 var extend = require(8);
+var now = require(4);
 var patch = require(2);
-var xhr = require(7);
-var now = require(3);
 
 var consoleIntercepted = false;
 var queue = {
@@ -17,15 +16,20 @@ var queue = {
 };
 
 function interceptConsole () {
-	if ( consoleIntercepted ) {
+
+	var methods = [];
+
+	if ( !global.console || consoleIntercepted ) {
 		return;
 	}
 	consoleIntercepted = true;
+
 	patch(function ( args ) {
 		for ( var i = 0, queueLength = queue['console'].length; i < queueLength; i++ ) {
-			sendConsole.call(queue['console'][i], args.method, args[0]);
+			sendConsole.call(queue['console'][i], args.method, args.arguments);
 		}
 	});
+
 }
 
 /**
@@ -136,10 +140,10 @@ Beacon.prototype.defaults = {
  * @return {Object}
  */
 Beacon.prototype.send = function ( data ) {
-	data = generate(data);
-	xhr(this.options.url, data, {
-		method: 'POST'
-	});
+	var xhr = global.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+	xhr.open('POST', this.options.url, true);
+	xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+	xhr.send(qs(generate(data)));
 	return data;
 };
 
@@ -159,28 +163,59 @@ Beacon.prototype.destroy = function () {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
+var foreach = require(3);
 module.exports = function(onConsole) {
   var methods = []
   for (var key in console) methods.push(key)
-  methods.forEach(function(method) {
+  foreach(methods, function(method) {
     var orig = console[method]
     var proxy = function consoleProxy() {
       var args = [].slice.call(arguments)
       onConsole({method: method, arguments: args})
-      orig.apply(console, args)
+      if ( orig.apply ) {
+        // Do this for normal browsers
+        orig.apply(console, args)
+      } else {
+        // Do this for IE
+        orig([].slice.apply(args).join(' '));
+      }
     }
     console[method] = proxy
   })
 }
 
 },{}],3:[function(require,module,exports){
+
+var hasOwn = Object.prototype.hasOwnProperty;
+var toString = Object.prototype.toString;
+
+module.exports = function forEach (obj, fn, ctx) {
+    if (toString.call(fn) !== '[object Function]') {
+        throw new TypeError('iterator must be a function');
+    }
+    var l = obj.length;
+    if (l === +l) {
+        for (var i = 0; i < l; i++) {
+            fn.call(ctx, obj[i], i, obj);
+        }
+    } else {
+        for (var k in obj) {
+            if (hasOwn.call(obj, k)) {
+                fn.call(ctx, obj[k], k, obj);
+            }
+        }
+    }
+};
+
+
+},{}],4:[function(require,module,exports){
 module.exports = Date.now || now
 
 function now() {
     return new Date().getTime()
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -191,13 +226,13 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 /**
  * Module dependencies.
  */
 
-var trim = require(6);
+var trim = require(7);
 
 /**
  * Parse the given query `str`.
@@ -242,7 +277,7 @@ exports.stringify = function(obj){
   return pairs.join('&');
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -257,92 +292,6 @@ exports.left = function(str){
 exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
-
-},{}],7:[function(require,module,exports){
-(function (root, factory) {
-	if (typeof exports === 'object') {
-		module.exports = factory();
-	} else if (typeof define === 'function' && define.amd) {
-		define('uxhr', factory);
-	} else {
-		root.uxhr = factory();
-	}
-}(this, function () {
-
-	"use strict";
-
-	return function (url, data, options) {
-
-		data = data || '';
-		options = options || {};
-
-		var complete = options.complete || function(){},
-			success = options.success || function(){},
-			error = options.error || function(){},
-			headers = options.headers || {},
-			method = options.method || 'GET',
-			sync = options.sync || false,
-			req = (function() {
-
-				if (typeof 'XMLHttpRequest' !== 'undefined') {
-
-					// CORS (IE8-9)
-					if (url.indexOf('http') === 0 && typeof XDomainRequest !== 'undefined') {
-						return new XDomainRequest();
-					}
-
-					// local, CORS (other browsers)
-					return new XMLHttpRequest();
-
-				} else if (typeof 'ActiveXObject' !== 'undefined') {
-					return new ActiveXObject('Microsoft.XMLHTTP');
-				}
-
-			})();
-
-		if (!req) {
-			throw new Error ('Browser doesn\'t support XHR');
-		}
-
-		// serialize data?
-		if (typeof data !== 'string') {
-			var serialized = [];
-			for (var datum in data) {
-				serialized.push(datum + '=' + data[datum]);
-			}
-			data = serialized.join('&');
-		}
-
-		// set timeout
-		if ('ontimeout' in req) {
-			req.ontimeout = +options.timeout || 0;
-		}
-
-		// listen for XHR events
-		req.onload = function () {
-			complete(req.responseText, req.status);
-			success(req.responseText);
-		};
-		req.onerror = function () {
-			complete(req.responseText);
-			error(req.responseText, req.status);
-		};
-
-		// open connection
-		req.open(method, (method === 'GET' && data ? url+'?'+data : url), !sync);
-
-		// set headers
-		for (var header in headers) {
-			req.setRequestHeader(header, headers[header]);
-		}
-
-		// send it
-		req.send(method !== 'GET' ? data : null);
-
-		return req;
-	};
-
-}));
 
 },{}],8:[function(require,module,exports){
 module.exports = extend
