@@ -103,7 +103,7 @@ beacon.destroy();
 ```js
 define(['kist-beacon'], cb);
 
-window.$.kist.Beacon;
+window.kist.Beacon;
 ```
 
 ## Browser support
