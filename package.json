@@ -1,6 +1,6 @@
 {
   "name": "kist-beacon",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Front-end logging interface.",
   "author": "Ivan Nikolić <niksy5@gmail.com> (http://ivannikolic.com/)",
   "license": "MIT",
