@@ -62,8 +62,8 @@ Destroys logger instance.
 Create new instance.
 
 ```js
-var beacon = require('kist-beacon');
-var beacon = new kist.Beacon({
+var Beacon = require('kist-beacon');
+var beacon = new Beacon({
 	url: '/log',
 	js: true,
 	console: false
