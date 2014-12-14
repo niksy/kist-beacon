@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>{{title}}</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+	<script src="{{compiled}}/{{main}}"></script>
+	<script>
+		var beacon1 = new kist.Beacon({ url: 'http://0.0.0.0:3000/log', console: true });
+		var beacon2 = new kist.Beacon({ url: 'http://0.0.0.0:3000/log1' });
+	</script>
+	<script>console.log('console call');</script>
+	<script>barfoo</script>
+</head>
+<body>

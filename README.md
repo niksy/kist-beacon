@@ -5,7 +5,9 @@ Front-end logging interface.
 ## Installation
 
 ```sh
-bower install niksy/kist-beacon
+npm install kist-beacon --save
+
+bower install kist-beacon --save
 ```
 
 ## API
@@ -24,6 +26,8 @@ Default: ` `
 
 Endpoint where your application will pass query parameters from AJAX call and do with them what you desire: save them to database, logfile on server, etc.
 
+Data is sent via `POST` request so if your endpoint is CORS-like, beacon won’t work properly in browsers without [CORS support](http://caniuse.com/#search=cors).
+
 ##### js
 
 Type: `Boolean`  
@@ -36,9 +40,9 @@ Log JS errors.
 Type: `Boolean`  
 Default: `false`
 
-Log console calls (`log`, `warn`, `error`).
+Log `console` calls.
 
-### `send(data)`
+### `.send(data)`
 
 Returns: `Object`
 
@@ -49,7 +53,7 @@ Sends information to provided URL. Information will be send as standard `GET` re
 Type: `Object`  
 *Required*
 
-### `destroy`
+### `.destroy()`
 
 Destroys logger instance.
 
@@ -58,6 +62,7 @@ Destroys logger instance.
 Create new instance.
 
 ```js
+var beacon = require('kist-beacon');
 var beacon = new kist.Beacon({
 	url: '/log',
 	js: true,
@@ -91,6 +96,14 @@ Destroy instance.
 
 ```js
 beacon.destroy();
+```
+
+### AMD and global
+
+```js
+define(['kist-beacon'], cb);
+
+window.$.kist.Beacon;
 ```
 
 ## Browser support

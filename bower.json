@@ -3,10 +3,10 @@
   "version": "0.2.1",
   "description": "Front-end logging interface.",
   "authors": [
-    "Ivan Nikolić"
+    "Ivan Nikolić <niksy5@gmail.com> (http://ivannikolic.com/)"
   ],
   "license": "MIT",
-  "main": "dist/kist-beacon.min.js",
+  "main": "dist/kist-beacon.js",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -14,12 +14,16 @@
     "test",
     "tests",
     "src",
+    "lib",
     "Gruntfile.js",
     "package.json"
   ],
   "homepage": "https://github.com/niksy/kist-beacon",
   "keywords": [
+    "kist",
+    "beacon",
     "logger",
-    "frontend"
+    "frontend",
+    "browserify"
   ]
 }
