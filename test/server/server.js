@@ -1,6 +1,7 @@
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
+var multer  = require('multer');
 var path = require('path');
 var empty = require('is-empty');
 
@@ -10,6 +11,7 @@ var data = {
 	'log1': []
 };
 
+app.use(multer());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true

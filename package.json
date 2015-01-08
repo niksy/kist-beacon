@@ -15,7 +15,7 @@
     "console-patch": "niksy/console-patch#foreach",
     "date-now": "^1.0.1",
     "indexof": "0.0.1",
-    "querystring-component": "^1.1.0",
+    "ping-home": "^0.1.0",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
@@ -39,7 +39,8 @@
     "grunt-nodemon": "^0.3.0",
     "is-empty": "0.0.1",
     "load-grunt-tasks": "^1.0.0",
-    "opn": "^1.0.0"
+    "opn": "^1.0.0",
+    "multer": "^0.1.6"
   },
   "repository": {
     "type": "git",
