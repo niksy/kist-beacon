@@ -1,3 +1,9 @@
+![Unmaintained project](https://img.shields.io/badge/status-unmaintained-red.svg)
+
+**This project is unmaintained.**
+
+---
+
 # kist-beacon
 
 Front-end logging interface.
